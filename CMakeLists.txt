@@ -5,6 +5,6 @@ add_library(yzaudiolib INTERFACE)
 add_library(yzaudiolib::yzaudiolib ALIAS yzaudiolib)
 
 target_include_directories(yzaudiolib INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
