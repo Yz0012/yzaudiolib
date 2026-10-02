@@ -1,3 +1,7 @@
+//------------------------------------------------------------------------
+// Copyright(c) 2026 Y_z00.
+//------------------------------------------------------------------------
+
 #include "IYAudioProcessor.h"
 #include <type_traits>
 
@@ -12,32 +16,39 @@
 #define Y_SIMD_SSE2 1
 #endif
 
+enum ParamIndex : int {
+    kGain = 0,
+    kNumParams
+};
+
 template <typename T>
 class GainAudioProcessor : public IYAudioProcessor<T>
 {
-    enum ParamIndex : int {
-        mGain = 0,
-        kNumParams
-    };
 
 public:
     GainAudioProcessor();
     ~GainAudioProcessor();
-    void process(T** input, T** output, int numSamples, int numChannels, const float* params) override;
+    void process(T** input, T** output, int numSamples, int numChannels) override;
     void reset() override;
+    void setParams(const double* params) override;
 private:
+    const double initParams = { 1.0 };
+	const double* params = nullptr;
 };
 
 template <typename T>
-GainAudioProcessor<T>::GainAudioProcessor() {}
+GainAudioProcessor<T>::GainAudioProcessor()
+{
+    this->params = &initParams;
+}
 
 template <typename T>
 GainAudioProcessor<T>::~GainAudioProcessor() {}
 
 template <typename T>
-void GainAudioProcessor<T>::process(T** input, T** output, int numSamples, int numChannels, const float* params)
+void GainAudioProcessor<T>::process(T** input, T** output, int numSamples, int numChannels)
 {
-    const T gain = static_cast<T>(params[mGain]);
+    const T gain = static_cast<T>(params[kGain]);
 
     for (int ch = 0; ch < numChannels; ++ch)
     {
@@ -109,3 +120,9 @@ void GainAudioProcessor<T>::process(T** input, T** output, int numSamples, int n
 
 template <typename T>
 void GainAudioProcessor<T>::reset() {}
+
+template <typename T>
+void GainAudioProcessor<T>::setParams(const double* params)
+{
+	this->params = params;
+}
