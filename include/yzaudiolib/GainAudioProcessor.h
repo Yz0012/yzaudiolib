@@ -3,7 +3,6 @@
 //------------------------------------------------------------------------
 
 #include "IYAudioProcessor.h"
-#include <type_traits>
 
 #if defined(__AVX2__)
 #include <immintrin.h>
@@ -42,7 +41,7 @@ public:
 	* @note input 与 output 可以相同，以支持原地处理
 	* @note 调用前应通过 setParams() 设置有效参数，增益值来自 params[kGain]
 	*/
-	void process(T** input, T** output, int numSamples, int numChannels) override;
+	void process(T** input, T** output,const int numSamples, const int numChannels) override;
 	/**
 	* @brief 重置处理器内部状态
 	*
@@ -77,7 +76,7 @@ template <typename T>
 GainAudioProcessor<T>::~GainAudioProcessor() {}
 
 template <typename T>
-void GainAudioProcessor<T>::process(T** input, T** output, int numSamples, int numChannels)
+void GainAudioProcessor<T>::process(T** input, T** output,const int numSamples, const int numChannels)
 {
 	const T gain = static_cast<T>(params[kGain]);
 
