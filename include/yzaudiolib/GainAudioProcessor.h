@@ -29,9 +29,7 @@ public:
 	~GainAudioProcessor();
 	/**
 	* @brief 对多通道音频缓冲区应用增益
-	*
-	* 对每个通道执行 out[i] = in[i] * gain。若 T 为 float 或 double，
-	* 且编译时启用了 AVX2、NEON 或 SSE2，则会使用对应 SIMD 指令加速
+	* 编译时启用了 AVX2、NEON 或 SSE2，则会使用对应 SIMD 指令加速
 	*
 	* @param input 输入通道缓冲区数组，长度为 numChannels
 	* @param output 输出通道缓冲区数组，长度为 numChannels
@@ -39,13 +37,11 @@ public:
 	* @param numChannels 通道数
 	*
 	* @note input 与 output 可以相同，以支持原地处理
-	* @note 调用前应通过 setParams() 设置有效参数，增益值来自 params[kGain]
+	* @note 调用前应通过 setParams() 设置有效参数
 	*/
 	void process(T** input, T** output,const int numSamples, const int numChannels) override;
 	/**
 	* @brief 重置处理器内部状态
-	*
-	* 当前 GainAudioProcessor 没有需要重置的状态，因此为空实现
 	*/
 	void reset() override;
 	/**
@@ -54,22 +50,20 @@ public:
 	* 枚举列表:
 	* 	kGain = 0	// 增益系数 <br>
 	* 	kNumParams	// 参数总数
-	* 
-    * @param params 指向参数数组的指针，数组至少包含 kNumParams 个 double。
-    *               其中 params[kGain] 表示增益系数
     *
     * @note 调用者需保证 params 指向的内存在处理器使用期间保持有效
     */
-	void setParams(const double* params) override;
+	void setParams(const double** params) override;
 private:
-	const double initParams = { 1.0 };
+	double initGain[1] = { 1. };
+	const double* initParams[1] = { initGain };
 	const double* params = nullptr;
 };
 
 template <typename T>
 GainAudioProcessor<T>::GainAudioProcessor()
 {
-	this->params = &initParams;
+	this->params = initParams[kGain];
 }
 
 template <typename T>
@@ -152,7 +146,7 @@ template <typename T>
 void GainAudioProcessor<T>::reset() {}
 
 template <typename T>
-void GainAudioProcessor<T>::setParams(const double* params)
+void GainAudioProcessor<T>::setParams(const double** params)
 {
-	this->params = params;
+	this->params = params[kGain];
 }
