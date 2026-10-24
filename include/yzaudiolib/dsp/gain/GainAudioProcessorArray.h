@@ -2,18 +2,7 @@
 // Copyright(c) 2026 Y_z00.
 //------------------------------------------------------------------------
 
-#pragma once
 #include "yzaudiolib/dsp/gain/IGainProcessor.h"
-
-#include "yzaudiolib/errorcode/error_code_261007.h"
-#include "yzaudiolib/kernels/gain_kernels.h"
-#include "yzaudiolib/params/params_list/gain_array_params_list.h"
-
-#include <stdexcept>
-#include <memory>
-#include <cassert>
-#include <algorithm>
-#include <type_traits>
 
 template <typename T>
 class GainAudioProcessorArray : public IGainProcessor<T>
@@ -51,7 +40,7 @@ public:
 	* @see @ref yzaudiolib::params::gainarray::ParamIndex
 	*
 	* @note 无多线程处理
-	* @warning 返回数组指针，默认返回gainValues，越界返回gainValues
+	* 返回数组指针，默认返回gainValues，越界返回gainValues
 	*/
 	double* params(int) override;
 
@@ -60,7 +49,7 @@ public:
 
 private:
 
-	yzaudiolib::error::code261007::ErrorCode validateProcessArgs(const T* const* input, const T* const* output,
+	yzaudiolib::status::code261007::StatusCode validateProcessArgs(const T* const* input, const T* const* output,
 		int numSamples, int numChannels) const noexcept;
 
 	void prepareGainBuffer(int numSamples) noexcept;
@@ -76,7 +65,7 @@ private:
 };
 
 template <typename T>
-GainAudioProcessorArray<T>::GainAudioProcessorArray(int maxSamplesPerBlock)
+inline GainAudioProcessorArray<T>::GainAudioProcessorArray(int maxSamplesPerBlock)
 	: maxSamplesPerBlock_(maxSamplesPerBlock)
 {
 	if (maxSamplesPerBlock <= 0) {
@@ -98,34 +87,34 @@ GainAudioProcessorArray<T>::GainAudioProcessorArray(int maxSamplesPerBlock)
 }
 
 template <typename T>
-GainAudioProcessorArray<T>::~GainAudioProcessorArray() {}
+inline GainAudioProcessorArray<T>::~GainAudioProcessorArray() {}
 
 template <typename T>
-yzaudiolib::error::code261007::ErrorCode GainAudioProcessorArray<T>::validateProcessArgs(
+inline yzaudiolib::status::code261007::StatusCode GainAudioProcessorArray<T>::validateProcessArgs(
 	const T* const* input, const T* const* output,
 	int numSamples, int numChannels) const noexcept
 {
-	using yzaudiolib::error::code261007::ErrorCode;
+	using yzaudiolib::status::code261007::StatusCode;
 
-	if (gainValues_ == nullptr) return ErrorCode::nullGainValues;
-	if (numChannels <= 0) return ErrorCode::invalidNumChannels;
-	if (numSamples == 0) return ErrorCode::success;
-	if (input == nullptr) return ErrorCode::nullInput;
-	if (output == nullptr) return ErrorCode::nullOutput;
+	if (gainValues_ == nullptr) return StatusCode::nullGainValues;
+	if (numChannels <= 0) return StatusCode::invalidNumChannels;
+	if (numSamples == 0) return StatusCode::success;
+	if (input == nullptr) return StatusCode::nullInput;
+	if (output == nullptr) return StatusCode::nullOutput;
 
 	for (int ch = 0; ch < numChannels; ++ch) {
-		if (input[ch] == nullptr) return ErrorCode::nullInputChannel;
-		if (output[ch] == nullptr) return ErrorCode::nullOutputChannel;
+		if (input[ch] == nullptr) return StatusCode::nullInputChannel;
+		if (output[ch] == nullptr) return StatusCode::nullOutputChannel;
 	}
 
-	if (numSamples < 0) return ErrorCode::negativeNumSamples;
-	if (numSamples > maxSamplesPerBlock_) return ErrorCode::numSamplesExceedsMax;
+	if (numSamples < 0) return StatusCode::negativeNumSamples;
+	if (numSamples > maxSamplesPerBlock_) return StatusCode::numSamplesExceedsMax;
 
-	return ErrorCode::success;
+	return StatusCode::success;
 }
 
 template <typename T>
-void GainAudioProcessorArray<T>::prepareGainBuffer(int numSamples) noexcept
+inline void GainAudioProcessorArray<T>::prepareGainBuffer(int numSamples) noexcept
 {
 	if constexpr (std::is_same_v<T, float>) {
 		yzaudiolib::kernels::gain_kernels::convertDoubleToFloat(
@@ -135,7 +124,7 @@ void GainAudioProcessorArray<T>::prepareGainBuffer(int numSamples) noexcept
 }
 
 template <typename T>
-void GainAudioProcessorArray<T>::processOneChannel(
+inline void GainAudioProcessorArray<T>::processOneChannel(
 	const T* in, T* out, int numSamples) noexcept
 {
 	if constexpr (std::is_same_v<T, float>) {
@@ -149,16 +138,16 @@ void GainAudioProcessorArray<T>::processOneChannel(
 }
 
 template <typename T>
-int GainAudioProcessorArray<T>::process(
+inline int GainAudioProcessorArray<T>::process(
 	const T* const* input, T* const* output,
 	const int numSamples, const int numChannels)
 {
-	using yzaudiolib::error::code261007::ErrorCode;
+	using yzaudiolib::status::code261007::StatusCode;
 
-	const ErrorCode err =
+	const StatusCode err =
 		validateProcessArgs(input, output, numSamples, numChannels);
 
-	if (err != ErrorCode::success) {
+	if (err != StatusCode::success) {
 		return static_cast<int>(err);
 	}
 
@@ -168,11 +157,11 @@ int GainAudioProcessorArray<T>::process(
 		processOneChannel(input[ch], output[ch], numSamples);
 	}
 
-	return static_cast<int>(ErrorCode::success);
+	return static_cast<int>(StatusCode::success);
 }
 
 template <typename T>
-double* GainAudioProcessorArray<T>::params(int paramIndex)
+inline double* GainAudioProcessorArray<T>::params(int paramIndex)
 {
 	if (paramIndex == yzaudiolib::params::gainarray::ParamIndex::kGain)
 		return this->gainValues_;
