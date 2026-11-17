@@ -2,13 +2,14 @@
 // Copyright(c) 2026 Y_z00.
 //------------------------------------------------------------------------
 
-#include "yzaudiolib/dsp/gain/IGainProcessor.h"
+#pragma once
+
+#include "yzaudiolib/dsp/gain/igainprocessor.h"
 
 template <typename T>
 class GainAudioProcessorArray : public IGainProcessor<T>
 {
-	static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>,
-		"GainAudioProcessorArray only supports float/double");
+	using StatusCode = yzaudiolib::status::code261007::StatusCode;
 
 	static constexpr int kHardLimit = 1 << 15;
 
@@ -21,27 +22,9 @@ public:
 	GainAudioProcessorArray(GainAudioProcessorArray&&) = delete;
 	GainAudioProcessorArray& operator=(GainAudioProcessorArray&&) = delete;
 
-	/**
-	* @brief 对多通道音频缓冲区应用逐样本增益
-	*
-	* @param input 输入通道缓冲区数组，长度为 numChannels
-	* @param output 输出通道缓冲区数组，长度为 numChannels
-	* @param numSamples 每个通道需要处理的采样点数
-	* @param numChannels 通道数
-	*
-	* @note 通过 params() 设置有效参数；
-	*/
 	int process(const T* const* input, T* const* output,
 		const int numSamples, const int numChannels) override;
-	/**
-	* @brief 设置处理器参数
-	*
-	* 枚举列表:
-	* @see @ref yzaudiolib::params::gainarray::ParamIndex
-	*
-	* @note 无多线程处理
-	* 返回数组指针，默认返回gainValues，越界返回gainValues
-	*/
+
 	double* params(int) override;
 
 	int maxSamplesPerBlock() const noexcept { return maxSamplesPerBlock_; }
@@ -49,7 +32,7 @@ public:
 
 private:
 
-	yzaudiolib::status::code261007::StatusCode validateProcessArgs(const T* const* input, const T* const* output,
+	StatusCode validateProcessArgs(const T* const* input, const T* const* output,
 		int numSamples, int numChannels) const noexcept;
 
 	void prepareGainBuffer(int numSamples) noexcept;

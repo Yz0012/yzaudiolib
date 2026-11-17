@@ -9,26 +9,28 @@
 #include <type_traits>
 #include <stdexcept>
 
-#include "SetPoints.h"
-#include "GetPoints.h"
+#include "setpoints.h"
+#include "getpoints.h"
 #include "yzaudiolib/statuscode/lfomanager_status_code_261024.h"
 
 template <typename T>
-class LFOPointManager : public SetPoints<T>, public GetPoints<T>
+class LFOPointManager : public ISetPoints<T>, public IGetPoints<T>
 {
-	static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>,
-		"LFOPointManager only supports float/double");
 public:
 	using LFOStatus = yzaudiolib::status::code261024::LFOStatus;
 	explicit LFOPointManager(T w, T h);
 
 	int addPoint(const LFOPoint<T>& point) override;
 	int deletePoint(int pointIndex) override;
+	const LFOPoint<T> originPoint() const noexcept override;
 	const std::vector<LFOPoint<T>>& points() const noexcept override;
 	const std::vector<LFOPoint<T>>& controlPoints() const noexcept override;
+	const T drawPointWidthRange() const noexcept override;
+	const T drawPointHeightRange() const noexcept override;
 	int movePoints(int pointIndex, T x, T y) override;
 	int moveControlPoints(int pointIndex, T x, T y) override;
-
+	int moveEndPoints(T y) override;
+	int reset() override;
 private:
 	T width;
 	T height;
@@ -40,6 +42,7 @@ private:
 	int addControlPoint(int pointIndex);
 	bool isValidX(int pointIndex, bool isControlPoint, T x) const;
 	bool isValidY(T y) const;
+	int initializeDefaultPoints();
 };
 
 template <typename T>
@@ -49,9 +52,9 @@ inline LFOPointManager<T>::LFOPointManager(T w, T h) : width(w), height(h)
 	{
 		throw std::out_of_range("width or height should > 0");
 	}
-	points_.emplace_back(LFOPoint<T>{ T(0), height });
-	points_.emplace_back(LFOPoint<T>{ width, height });
-	controlPoints_.emplace_back(LFOPoint<T>{ width / T(2), height });
+	points_.emplace_back(LFOPoint<T>{ T(0), T(0) });
+	points_.emplace_back(LFOPoint<T>{ width, T(0) });
+	controlPoints_.emplace_back(LFOPoint<T>{ width / T(2), T(0) });
 }
 
 template <typename T>
@@ -170,6 +173,12 @@ inline int LFOPointManager<T>::addControlPoint(int pointIndex)
 }
 
 template <typename T>
+inline const LFOPoint<T> LFOPointManager<T>::originPoint() const noexcept
+{
+	return LFOPoint<T>{ T(0),T(0) };
+}
+
+template <typename T>
 inline const std::vector<LFOPoint<T>>& LFOPointManager<T>::points() const noexcept
 {
 	return this->points_;
@@ -179,6 +188,18 @@ template <typename T>
 inline const std::vector<LFOPoint<T>>& LFOPointManager<T>::controlPoints() const noexcept
 {
 	return this->controlPoints_;
+}
+
+template <typename T>
+inline const T LFOPointManager<T>::drawPointWidthRange() const noexcept
+{
+	return this->width;
+}
+
+template <typename T>
+inline const T LFOPointManager<T>::drawPointHeightRange() const noexcept
+{
+	return this->height;
 }
 
 template <typename T>
@@ -256,7 +277,7 @@ template <typename T>
 inline int LFOPointManager<T>::moveControlPoints(int pointIndex, T x, T y)
 {
 	const int n = static_cast<int>(controlPoints_.size()) - 1;
-	if (pointIndex <= 0 || pointIndex >= n)
+	if (pointIndex < 0 || pointIndex > n)
 		return static_cast<int>(LFOStatus::invalidIndex);
 
 	if (!isValidX(pointIndex, true, x))
@@ -284,4 +305,38 @@ inline int LFOPointManager<T>::moveControlPoints(int pointIndex, T x, T y)
 	}
 
 	return static_cast<int>(LFOStatus::success);
+}
+
+template <typename T>
+inline int LFOPointManager<T>::moveEndPoints(T y)
+{
+	if (!isValidY(y))
+	{
+		return static_cast<int>(LFOStatus::yOutOfRange);
+	}
+	else
+	{
+		points_.front().y = y;
+		points_.back().y = y;
+	}
+	return static_cast<int>(LFOStatus::success);
+}
+
+template <typename T>
+inline int LFOPointManager<T>::initializeDefaultPoints()
+{
+	points_.clear();
+	controlPoints_.clear();
+
+	points_.emplace_back(LFOPoint<T>{ T(0), height });
+	points_.emplace_back(LFOPoint<T>{ width, height });
+	controlPoints_.emplace_back(LFOPoint<T>{ width / T(2), height });
+
+	return static_cast<int>(LFOStatus::success);
+}
+
+template <typename T>
+inline int LFOPointManager<T>::reset()
+{
+	return initializeDefaultPoints();
 }

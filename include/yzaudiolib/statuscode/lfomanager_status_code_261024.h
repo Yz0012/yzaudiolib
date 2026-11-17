@@ -9,14 +9,14 @@ namespace yzaudiolib::status::code261024
     */
     enum class LFOStatus : int
     {
-        success = 0,
-        invalidIndex = -1,
-        duplicateX = -2,
-        xOutOfRange = -3,
-        yOutOfRange = -4,
-        protectedPoint = -5,
-        xConflict = -6,
-        invalidArgument = -7,
-        controlPointAndPointDuplicateX = -8
+        success = -1,
+        invalidIndex = -2,
+        duplicateX = -3,
+        xOutOfRange = -4,
+        yOutOfRange = -5,
+        protectedPoint = -6,
+        xConflict = -7,
+        invalidArgument = -8,
+        controlPointAndPointDuplicateX = -9
     };
 }
