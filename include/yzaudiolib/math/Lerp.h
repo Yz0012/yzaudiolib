@@ -15,7 +15,7 @@ namespace yzaudiolib::math::lerp
 	*	t: interpolation factor (0.0 to 1.0)
 	*/
 	template <typename T>
-	inline inline T lerp(T a, T b, float t) {
+	inline T lerp(T a, T b, float t) {
 		return a + (b - a) * t;
 	}
 }
