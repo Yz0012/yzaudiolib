@@ -15,7 +15,7 @@ namespace yzaudiolib::status::code261007
 		nullOutput,             // 输出通道缓冲区数组 output 为空
 		nullInputChannel,         // 输入通道缓冲区 input[i] 为空
 		nullOutputChannel,        // 输出通道缓冲区 output[i] 为空
-		negativeNumSamples,     // numSamples < 0
+		invalidNumSamples,     // numSamples <= 0
 		numSamplesExceedsMax,   // numSamples > maxSamplesPerBlock_
 		invalidNumChannels,     // numChannels <= 0
 	};

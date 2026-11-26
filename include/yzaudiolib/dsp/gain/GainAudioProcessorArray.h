@@ -86,7 +86,7 @@ inline yzaudiolib::status::code261007::StatusCode GainAudioProcessorArray<T>::va
 
 	if (gainValues_ == nullptr) return StatusCode::nullGainValues;
 	if (numChannels <= 0) return StatusCode::invalidNumChannels;
-	if (numSamples == 0) return StatusCode::success;
+	if (numSamples <= 0) return StatusCode::invalidNumSamples;
 	if (input == nullptr) return StatusCode::nullInput;
 	if (output == nullptr) return StatusCode::nullOutput;
 
@@ -95,7 +95,6 @@ inline yzaudiolib::status::code261007::StatusCode GainAudioProcessorArray<T>::va
 		if (output[ch] == nullptr) return StatusCode::nullOutputChannel;
 	}
 
-	if (numSamples < 0) return StatusCode::negativeNumSamples;
 	if (numSamples > maxSamplesPerBlock_) return StatusCode::numSamplesExceedsMax;
 
 	return StatusCode::success;
