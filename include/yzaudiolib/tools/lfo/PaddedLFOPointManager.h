@@ -44,7 +44,7 @@ public:
 		return ret;
 	}
 
-	const LFOPoint<T> originPoint() const noexcept override
+	LFOPoint<T> originPoint() const noexcept override
 	{
 		return LFOPoint<T>{T(padding_), T(padding_)};
 	}
@@ -59,12 +59,12 @@ public:
 		return externalControlPoints_;
 	}
 
-	const T drawPointWidthRange() const noexcept override
+	T drawPointWidthRange() const noexcept override
 	{
 		return width_ - 2 * padding_;
 	}
 
-	const T drawPointHeightRange() const noexcept override
+	T drawPointHeightRange() const noexcept override
 	{
 		return height_ - 2 * padding_;
 	}

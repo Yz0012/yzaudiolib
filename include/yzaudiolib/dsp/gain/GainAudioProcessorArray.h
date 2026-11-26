@@ -77,7 +77,6 @@ inline yzaudiolib::status::code261007::StatusCode GainAudioProcessorArray<T>::va
 	const T* const* input, const T* const* output,
 	int numSamples, int numChannels) const noexcept
 {
-	using yzaudiolib::status::code261007::StatusCode;
 
 	if (gainValues_ == nullptr) return StatusCode::nullGainValues;
 	if (numChannels <= 0) return StatusCode::invalidNumChannels;
@@ -125,7 +124,6 @@ inline int GainAudioProcessorArray<T>::process(
 	const T* const* input, T* const* output,
 	const int numSamples, const int numChannels)
 {
-	using yzaudiolib::status::code261007::StatusCode;
 
 	const StatusCode err =
 		validateProcessArgs(input, output, numSamples, numChannels);

@@ -22,11 +22,11 @@ public:
 
 	int addPoint(const LFOPoint<T>& point) override;
 	int deletePoint(int pointIndex) override;
-	const LFOPoint<T> originPoint() const noexcept override;
+	LFOPoint<T> originPoint() const noexcept override;
 	const std::vector<LFOPoint<T>>& points() const noexcept override;
 	const std::vector<LFOPoint<T>>& controlPoints() const noexcept override;
-	const T drawPointWidthRange() const noexcept override;
-	const T drawPointHeightRange() const noexcept override;
+	T drawPointWidthRange() const noexcept override;
+	T drawPointHeightRange() const noexcept override;
 	int movePoints(int pointIndex, T x, T y) override;
 	int moveControlPoints(int pointIndex, T x, T y) override;
 	int moveEndPoints(T y) override;
@@ -173,7 +173,7 @@ inline int LFOPointManager<T>::addControlPoint(int pointIndex)
 }
 
 template <typename T>
-inline const LFOPoint<T> LFOPointManager<T>::originPoint() const noexcept
+inline LFOPoint<T> LFOPointManager<T>::originPoint() const noexcept
 {
 	return LFOPoint<T>{ T(0),T(0) };
 }
@@ -191,13 +191,13 @@ inline const std::vector<LFOPoint<T>>& LFOPointManager<T>::controlPoints() const
 }
 
 template <typename T>
-inline const T LFOPointManager<T>::drawPointWidthRange() const noexcept
+inline T LFOPointManager<T>::drawPointWidthRange() const noexcept
 {
 	return this->width;
 }
 
 template <typename T>
-inline const T LFOPointManager<T>::drawPointHeightRange() const noexcept
+inline T LFOPointManager<T>::drawPointHeightRange() const noexcept
 {
 	return this->height;
 }
