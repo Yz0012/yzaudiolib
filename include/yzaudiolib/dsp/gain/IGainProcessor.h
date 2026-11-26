@@ -13,12 +13,6 @@
 #include "yzaudiolib/dsp/gain/kernels/gain_kernels.h"
 #include "yzaudiolib/params/params_list/gain_array_params_list.h"
 
-#include <stdexcept>
-#include <memory>
-#include <cassert>
-#include <algorithm>
-#include <type_traits>
-
 template <typename T>
 class IGainProcessor : public ReceiveVst3Audio<T>, public ParamsArrayPointer
 {

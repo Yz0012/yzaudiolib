@@ -6,6 +6,12 @@
 
 #include "yzaudiolib/dsp/gain/igainprocessor.h"
 
+#include <stdexcept>
+#include <memory>
+#include <cassert>
+#include <algorithm>
+#include <type_traits>
+
 template <typename T>
 class GainAudioProcessorArray : public IGainProcessor<T>
 {
